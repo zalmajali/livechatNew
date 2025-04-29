@@ -369,8 +369,12 @@ public allMassegesCheckData: Set<any> = new Set();
     let imagemimeType: string = this.getMimeType(imageExtension);
     const formData = new FormData();
     const response = await fetch(imagePath);
+    alert("dsfsdfsdf");
+    alert(response);
     const blob = await response.blob();
+    alert("345345345");
     formData.append('chatFile', blob, imageName);
+    alert("34534534werwerwer5");
     const sendValues = {
       'mainUserName': this.mainUserName,
       'userName': this.userName,
@@ -382,6 +386,7 @@ public allMassegesCheckData: Set<any> = new Set();
     for (const key in sendValues) {
       formData.append(key, (sendValues as any)[key]);
     }
+    alert("456");
     try {
     alert("sdfsdffsdf")
 
