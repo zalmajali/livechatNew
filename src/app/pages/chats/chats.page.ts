@@ -383,7 +383,9 @@ public allMassegesCheckData: Set<any> = new Set();
       formData.append(key, (sendValues as any)[key]);
     }
     try {
-      const uploadResponse = await fetch("https://api.taqnyat.sa/chatSendFile.php", {
+    alert("sdfsdffsdf")
+
+      const uploadResponse = await fetch("https://dev.taqnyat.sa/liveChatTest/chatSendFileJ.php", {
         method: 'POST',
         body: formData
       });
