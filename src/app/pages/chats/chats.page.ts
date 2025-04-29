@@ -334,8 +334,9 @@ public allMassegesCheckData: Set<any> = new Set();
                   else if (file.type === 'image/gif') extension = '.gif';
                   else extension = '.bin'; // fallback
                   let finalName = file.name;
+                  let imageName = imageData.substring(imageData.lastIndexOf('/') + 1);
                   if (!finalName || !finalName.includes('.')) {
-                    finalName = 'image' + extension;
+                    finalName = imageName + extension;
                   }
                 this.uploadImageFromContentUri(reader.result as ArrayBuffer, finalName, file.type);
               } else {
@@ -363,6 +364,8 @@ public allMassegesCheckData: Set<any> = new Set();
   async uploadImage(imagePath: any) {
     let imageName = imagePath.substring(imagePath.lastIndexOf('/') + 1);
     let imageExtension = imageName.split('.').pop().toLowerCase();
+    alert(imageName);
+    alert(imageExtension);
     let imagemimeType: string = this.getMimeType(imageExtension);
     const formData = new FormData();
     const response = await fetch(imagePath);
@@ -386,6 +389,7 @@ public allMassegesCheckData: Set<any> = new Set();
       });
       const data = await uploadResponse.text();
       await this.functionChatSeen(this.selectNumber);
+      alert("done")
       this.onMessage = "";
     } catch (error) {
       alert("error file");
