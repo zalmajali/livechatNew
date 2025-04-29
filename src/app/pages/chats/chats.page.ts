@@ -361,48 +361,90 @@ public allMassegesCheckData: Set<any> = new Set();
     });
     this.toggled = false;
   }
-  async uploadImage(imagePath: any) {
-    let imageName = imagePath.substring(imagePath.lastIndexOf('/') + 1);
-    let imageExtension = imageName.split('.').pop().toLowerCase();
-    alert(imageName);
-    alert(imageExtension);
-    let imagemimeType: string = this.getMimeType(imageExtension);
-    const formData = new FormData();
-    const response = await fetch(imagePath);
-    alert("dsfsdfsdf");
-    alert(response);
-    const blob = await response.blob();
-    alert("345345345");
-    formData.append('chatFile', blob, imageName);
-    alert("34534534werwerwer5");
-    const sendValues = {
-      'mainUserName': this.mainUserName,
-      'userName': this.userName,
-      'password': this.password,
-      'apiKey': this.apiKey,
-      'mobile': this.selectNumber,
-      'sessionLogin': this.sessionLogin
-    };
-    for (const key in sendValues) {
-      formData.append(key, (sendValues as any)[key]);
-    }
-    alert("456");
-    try {
-    alert("sdfsdffsdf")
+  async uploadImage(imageData: any) {
+    let currentDate = new Date();
+    this.year = currentDate.getFullYear();
+    this.month = currentDate.getMonth() + 1; // Months are zero-based (0 = January)
+    this.day = currentDate.getDate();
+    this.hour = currentDate.getHours();
+    this.minutes  = currentDate.getMinutes();
+    this.seconds = currentDate.getSeconds();
+    if(this.month<10)
+      this.month = '0'+ this.month;
+    if(this.day<10) 
+      this.day = '0'+ this.day;
+    if(this.hour<10)   
+      this.hour = '0'+ this.hour;
+    if(this.minutes<10) 
+      this.minutes = '0'+ this.minutes;
+    if(this.seconds<10) 
+      this.seconds = '0'+ this.seconds;
+    this.genaratedFullDate = this.year+""+this.month+""+this.day;
+    let key = this.mainUserName+this.userName+this.password+"(OLH)"+this.genaratedDate;
+    const md5Hash = CryptoJS.algo.MD5.create();
+    md5Hash.update(key);
+    this.apiKey = md5Hash.finalize();
+    this.apiKey=this.apiKey.toString();
 
-      const uploadResponse = await fetch("https://dev.taqnyat.sa/liveChatTest/chatSendFileJ.php", {
-        method: 'POST',
-        body: formData
-      });
-      const data = await uploadResponse.text();
-      await this.functionChatSeen(this.selectNumber);
-      alert("done")
-      this.onMessage = "";
-    } catch (error) {
-      alert("error file");
+    const fileTransfer: FileTransferObject = this.transfer.create();
+    let imageName = imageData.substring(imageData.lastIndexOf('/') + 1);
+    let imageExtension = imageData.split('.').pop().toLowerCase();
+    let imagemimeType: string="";
+    if (imageExtension === 'jpg' || imageExtension === 'jpeg') {
+      imagemimeType = "image/jpeg";
+    } else if (imageExtension === 'png') {
+      imagemimeType = "image/png";
+    }
+    else if (imageExtension === 'gif') {
+      imagemimeType = "image/gif";
+    }
+    if(imageData!=undefined && imageData!=null && imageData!=""){
+      let sendValues = {'mainUserName':this.mainUserName,'userName':this.userName,'password':this.password,'apiKey':this.apiKey,'mobile':this.selectNumber,'sessionLogin':this.sessionLogin};
+      const jsonData = JSON.stringify(sendValues);
+      let options: FileUploadOptions = {
+        fileKey: 'chatFile',
+        fileName:imageName,
+        mimeType: imagemimeType,
+        chunkedMode:false,
+        params: sendValues,
+        headers: {}
+      }
+        fileTransfer.upload(imageData, "https://api.taqnyat.sa/chatSendFile.php", options)
+        .then(async(data) => {
+          alert("asd")
+          await this.functionFeachData(this.selectNumber,this.chatSessionId);
+          await this.functionChatSeen(this.selectNumber);
+          this.onMessage = "";
+        }, (err) => {
+         
+      })
     }
   }
   async uploadImageFromContentUri(fileData: ArrayBuffer, fileName: string, mimeType: string) {
+    let currentDate = new Date();
+    this.year = currentDate.getFullYear();
+    this.month = currentDate.getMonth() + 1; // Months are zero-based (0 = January)
+    this.day = currentDate.getDate();
+    this.hour = currentDate.getHours();
+    this.minutes  = currentDate.getMinutes();
+    this.seconds = currentDate.getSeconds();
+    if(this.month<10)
+      this.month = '0'+ this.month;
+    if(this.day<10) 
+      this.day = '0'+ this.day;
+    if(this.hour<10)   
+      this.hour = '0'+ this.hour;
+    if(this.minutes<10) 
+      this.minutes = '0'+ this.minutes;
+    if(this.seconds<10) 
+      this.seconds = '0'+ this.seconds;
+    this.genaratedFullDate = this.year+""+this.month+""+this.day;
+    let key = this.mainUserName+this.userName+this.password+"(OLH)"+this.genaratedDate;
+    const md5Hash = CryptoJS.algo.MD5.create();
+    md5Hash.update(key);
+    this.apiKey = md5Hash.finalize();
+    this.apiKey=this.apiKey.toString();
+
     const formData = new FormData();
     const blob = new Blob([fileData], { type: mimeType });
     formData.append('chatFile', blob, fileName);
@@ -440,17 +482,6 @@ public allMassegesCheckData: Set<any> = new Set();
       default:
         return ''; // يمكنك إضافة المزيد من الأنواع حسب الحاجة
     }
-  }
-  formatDateTime(date: Date): string {
-    const year = date.getFullYear();
-    let month = (date.getMonth() + 1).toString().padStart(2, '0');
-    let day = date.getDate().toString().padStart(2, '0');
-    let hours: any = date.getHours().toString().padStart(2, '0');
-    let minutes = date.getMinutes().toString().padStart(2, '0');
-    let seconds = date.getSeconds().toString().padStart(2, '0');
-    let ampm = hours >= 12 ? 'PM' : 'AM';
-    hours = (hours % 12).toString().padStart(2, '0'); // Convert to 12-hour format
-    return `${year}/${month}/${day} ${hours}:${minutes}:${seconds} ${ampm}`;
   }
   functionSelectEmoji(event:any){
     this.onMessage += ' ' + event.emoji.unicode;
